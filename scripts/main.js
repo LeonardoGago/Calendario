@@ -3,12 +3,12 @@
 
 let nav = 0
 let clicked = null
-let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : []
+let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : {};
 
 
 // variavel do modal:
-const newEvent = document.getElementById('newEventModal')
-const deleteEventModal = document.getElementById('deleteEventModal')
+const eventModal = document.getElementById('eventModal');
+const eventList = document.getElementById('eventList');
 const backDrop = document.getElementById('modalBackDrop')
 const eventTitleInput = document.getElementById('eventTitleInput')
 // --------
@@ -17,23 +17,30 @@ const weekdays = ['domingo','segunda-feira', 'terça-feira', 'quarta-feira', 'qu
 
 //funções
 
-function openModal(date){
-  clicked = date
-  const eventDay = events.find((event)=>event.date === clicked)
- 
+function openModal(date) {
+  clicked = date;
+  const dayEvents = events[clicked] || [];
 
-  if (eventDay){
-   document.getElementById('eventText').innerText = eventDay.title
-   deleteEventModal.style.display = 'block'
+  eventList.innerHTML = '';
 
-
-  } else{
-    newEvent.style.display = 'block'
-
+  if (dayEvents.length === 0) {
+    eventList.innerHTML = '<p>Sem eventos para este dia.</p>';
+  } else {
+    dayEvents.forEach((event, index) => {
+      const eventItem = document.createElement('div');
+      eventItem.innerHTML = `
+        ${event}
+        <button onclick="deleteSingleEvent(${index})" style="margin-left: 10px;">🗑️</button>
+      `;
+      eventList.appendChild(eventItem);
+    });
   }
 
-  backDrop.style.display = 'block'
+  eventModal.style.display = 'block';
+  backDrop.style.display = 'block';
 }
+
+
 
 //função load() será chamada quando a pagina carregar:
 
@@ -86,20 +93,22 @@ function load (){
       dayS.innerText = i - paddinDays
       
 
-      const eventDay = events.find(event=>event.date === dayString)
+      const eventDay = events[dayString];
       
       if(i - paddinDays === day && nav === 0){
         dayS.id = 'currentDay'
       }
 
 
-      if(eventDay){
-        const eventDiv = document.createElement('div')
-        eventDiv.classList.add('event')
-        eventDiv.innerText = eventDay.title
-        dayS.appendChild(eventDiv)
-
+      if (eventDay) {
+        eventDay.forEach(event => {
+          const eventDiv = document.createElement('div');
+          eventDiv.classList.add('event');
+          eventDiv.innerText = event;
+          dayS.appendChild(eventDiv);
+        });
       }
+      
 
       dayS.addEventListener('click', ()=> openModal(dayString))
 
@@ -112,33 +121,33 @@ function load (){
   }
 }
 
-function closeModal(){
-  eventTitleInput.classList.remove('error')
-  newEvent.style.display = 'none'
-  backDrop.style.display = 'none'
-  deleteEventModal.style.display = 'none'
-
-  eventTitleInput.value = ''
-  clicked = null
-  load()
-
+function closeModal() {
+  eventTitleInput.classList.remove('error');
+  eventTitleInput.value = '';
+  eventModal.style.display = 'none';
+  backDrop.style.display = 'none';
+  clicked = null;
 }
-function saveEvent(){
-  if(eventTitleInput.value){
-    eventTitleInput.classList.remove('error')
 
-    events.push({
-      date: clicked,
-      title: eventTitleInput.value
-    })
+function saveEvent() {
+  const title = eventTitleInput.value;
+  if (title) {
+    if (!events[clicked]) {
+      events[clicked] = [];
+    }
 
-    localStorage.setItem('events', JSON.stringify(events))
-    closeModal()
+    events[clicked].push(title);
+    localStorage.setItem('events', JSON.stringify(events));
 
-  }else{
-    eventTitleInput.classList.add('error')
+    eventTitleInput.value = '';
+    openModal(clicked); // recarrega o modal com novos eventos
+    load(); // atualiza o calendário
+  } else {
+    eventTitleInput.classList.add('error');
   }
 }
+
+
 
 function deleteEvent(){
 
@@ -147,6 +156,16 @@ function deleteEvent(){
   closeModal()
 }
 
+function deleteSingleEvent(index) {
+  events[clicked].splice(index, 1);
+  if (events[clicked].length === 0) {
+    delete events[clicked];
+  }
+
+  localStorage.setItem('events', JSON.stringify(events));
+  openModal(clicked); // atualiza o modal
+  load(); // atualiza o calendário
+}
 // botões 
 
 function buttons (){
@@ -162,13 +181,9 @@ function buttons (){
     
   })
 
-  document.getElementById('saveButton').addEventListener('click',()=> saveEvent())
-
-  document.getElementById('cancelButton').addEventListener('click',()=>closeModal())
-
-  document.getElementById('deleteButton').addEventListener('click', ()=>deleteEvent())
-
-  document.getElementById('closeButton').addEventListener('click', ()=>closeModal())
+  document.getElementById('saveButton').addEventListener('click', saveEvent);
+  document.getElementById('closeButton').addEventListener('click', closeModal);
+  
   
 }
 buttons()

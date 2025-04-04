@@ -3,11 +3,11 @@ html{
 
   --body-color:#FFFCFF ;
 
-  --header-color:#d36c6c;
+  --header-color:#00B288;
 
   --header-button:#92a1d1;
 
-  --color-weekdays: #247BA0;
+  --color-weekdays: #858585;
   
   --box-shadow: #CBD4C2;
 
@@ -56,7 +56,9 @@ button {
   background-color:var(--header-button);
 }
 #container {
+  margin-top: 100px ;
   width: 770px;
+  color: var(--header-color);
 }
 #weekdays {
   width: 100%;
@@ -154,3 +156,96 @@ button {
   background-color: rgba(0,0,0,0.8);
 }
 
+#eventModal {
+  display: none;
+  z-index: 20;
+  padding: 25px;
+  background-color: var(--modal-event);
+  box-shadow: 0px 0px 3px black;
+  border-radius: 5px;
+  width: 350px;
+  top: 100px;
+  left: calc(50% - 175px);
+  position: absolute;
+  font-family: sans-serif;
+}
+
+/* Teste menu lateral */
+
+body {
+  display: flex;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+.sidebar {
+  width: 250px;
+  background-color: #00B288;
+  color: white;
+  height: 100vh;
+  padding: 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+.logo {
+  font-size: 40px;
+  font-weight: bold;
+  font-weight: 100px;
+}
+.menu {
+  list-style: none;
+  padding: 0;
+}
+.menu li {
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.menu li.active, .menu li:hover {
+  background-color: #008C6C;
+  border-radius: 5px;
+}
+.menu img{
+  width: 40px;
+  margin-right: 15px;
+}
+.content {
+  margin-left: 270px;
+  padding: 20px;
+}
+
+.tituloLogo{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 0;
+}
+
+.tituloLogo img{
+  width: 90px;
+  margin: 0;
+}
+
+
+header {
+  width: 100%;
+  background-color: #f8f9fa;
+  padding: 15px;
+  position: fixed;
+  top: 0;
+  left: 250px; /* Largura da sidebar */
+  height: 60px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: var(--header-color);
+}
+
+.content {
+  margin-left: 250px; /* Sidebar */
+  margin-top: 80px; /* Espaço para o header */
+  padding: 20px;
+}
